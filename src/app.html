@@ -28,9 +28,9 @@
           <span>Past Orders</span>
         </a>
       </nav>
-      <a href="#" class="top-bar-cart-link">
+      <a @click="toggleSidebar" class="top-bar-cart-link">
         <i class="icofont-cart-alt icofont-1x"></i>
-        <span>Cart (0)</span>
+        <span>Cart ({{0}})</span>
       </a>
     </header>
 
@@ -66,7 +66,7 @@
                   <label>Price:</label>
                 </div>
                 <div class="cell">
-                  $4.82
+                  RM3.00
                 </div>
               </div>
               <div class="row">
@@ -104,7 +104,7 @@
                   <label>Price:</label>
                 </div>
                 <div class="cell">
-                  $1.62
+                  RM15.00
                 </div>
               </div>
               <div class="row">
@@ -142,7 +142,7 @@
                   <label>Price:</label>
                 </div>
                 <div class="cell">
-                  $1.04
+                  RM12.50
                 </div>
               </div>
               <div class="row">
@@ -164,6 +164,9 @@
 
     </main>
 
+    <sidebar v-if="showSideBar" :toggle="toggleSidebar" :cart="cart">
+    </sidebar>
+
     <footer>
     </footer>
 
@@ -172,11 +175,12 @@
 </body>
 
 <script>
-
+  //////////
   const app = Vue.createApp({
     ///
     data() {
       return {
+        showSideBar: false,
         inventory: {
           carrot: 0,
           pineapple: 0,
@@ -191,13 +195,93 @@
     },
     ///
     methods: {
+      ///
       addToCart(type) {
         this.cart[type] += this.inventory[type]
         console.log(this.cart)
+      },
+      ///
+      toggleSidebar() {
+        this.showSideBar = !this.showSideBar
       }
     },
   })
+  //////////
+  app.component('sidebar', {
 
+    props: ['toggle', 'cart'],
+    ///
+    computed: {
+      cartTotal() {
+        return (this.cart.carrot * 3.00).toFixed(2)
+      },
+      ///
+      carrotPrice() {
+        return (this.cart.carrot * this.cartInventory.priceValue).toFixed(2)
+}
+    },
+    ///
+    data() {
+      return {
+        cartInventory: {
+          product: 'Carrot',
+          price: 'RM3.00',
+          priceValue: 3
+        }
+      }
+    },
+    ///
+    template:
+      `
+        <aside class= "cart-container" >
+          <div class="cart">
+            <h1 class="cart-title spread">
+              <span>
+                Cart
+                <i class="icofont-cart-alt icofont-1x"></i>
+              </span>
+              <button @click="toggle" class="cart-close">&times;</button>
+            </h1>
+
+            <div class="cart-body">
+              <table class="cart-table">
+                <thead>
+                  <tr>
+                    <th><span class="sr-only">Product Image</span></th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><i class="icofont-carrot icofont-3x"></i></td>
+                    <td>{{ this.cartInventory.product }}</td>
+                    <td>{{ this.cartInventory.price }}</td>
+                    <td class="center">{{ cart.carrot }}</td>
+                    <td>RM{{ carrotPrice }}</td>
+                    <td class="center">
+                      <button class="btn btn-light cart-remove">
+                        &times;
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p class="center"><em>No items in cart</em></p>
+              <div class="spread">
+                <span><strong>Total : </strong>RM{{cartTotal}}</span>
+                <button class="btn btn-light">Checkout</button>
+              </div>
+            </div>
+          </div>
+        </aside >
+      `
+  })
+  //////////
   app.mount('#app')
 
 </script>
